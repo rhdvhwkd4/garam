@@ -10,16 +10,13 @@ export default function AdminPage() {
 
   useEffect(() => {
     const peopleRef = ref(db, "people");
-    onValue(peopleRef, (snapshot) => {
-      setPeople(snapshot.val());
-    });
     const auctionRef = ref(db, "auction");
-    onValue(auctionRef, (snapshot) => {
-      setAuction(snapshot.val());
-    });
+
+    onValue(peopleRef, (snapshot) => setPeople(snapshot.val()));
+    onValue(auctionRef, (snapshot) => setAuction(snapshot.val()));
   }, []);
 
-  if (!people || !auction) return <p>불러오는 중...</p>;
+  if (!people || !auction) return <p className="text-white text-center">불러오는 중...</p>;
 
   const currentPlayerName = auction.current_player;
   const currentPlayer = people.players.find((p: any) => p.name === currentPlayerName);
@@ -62,22 +59,42 @@ export default function AdminPage() {
   };
 
   return (
-    <div style={{ padding: 40 }}>
-      <h2>🎯 운영자 페이지</h2>
-      <h3>📌 현재 선수: {currentPlayerName}</h3>
-      <p>점수: {currentPlayer?.score}</p>
-      <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
-        {auction.teams.map((team: any) => (
-          <div key={team.name} style={{ border: "1px solid #ccc", padding: 16 }}>
-            <h4>{team.name}</h4>
-            <p>남은 포인트: {team.points}</p>
-            <p>입찰가: {auction.bids?.[team.name] || 0}</p>
-            <button onClick={() => handleAuction(team.name)}>낙찰</button>
-          </div>
-        ))}
+    <div className="min-h-screen bg-black text-white p-6">
+      <h1 className="text-3xl font-bold text-blue-400 mb-6">🎯 운영자 페이지</h1>
+      <div className="bg-gray-900 p-6 rounded-3xl shadow-xl max-w-5xl mx-auto">
+        <h2 className="text-xl mb-4">📌 현재 선수: <span className="text-yellow-400 font-bold">{currentPlayerName}</span></h2>
+        <p className="mb-6">점수: <span className="text-green-400">{currentPlayer?.score}</span></p>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+          {auction.teams.map((team: any) => (
+            <div key={team.name} className="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow-md">
+              <h3 className="text-lg font-semibold text-white">{team.name}</h3>
+              <p className="text-sm text-gray-300">남은 포인트: <span className="text-green-400">{team.points}</span></p>
+              <p className="text-sm">입찰가: <span className="text-yellow-400">{auction.bids?.[team.name] || 0}</span></p>
+              <button
+                onClick={() => handleAuction(team.name)}
+                className="mt-3 bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg text-white font-bold w-full"
+              >
+                ✅ 낙찰
+              </button>
+            </div>
+          ))}
+        </div>
+
+        <div className="flex flex-wrap gap-4">
+          <button
+            onClick={handlePass}
+            className="bg-red-600 hover:bg-red-700 px-6 py-2 rounded-xl text-white font-semibold shadow-md"
+          >
+            ❌ 유찰
+          </button>
+          <button
+            onClick={callNextPlayer}
+            className="bg-blue-600 hover:bg-blue-700 px-6 py-2 rounded-xl text-white font-semibold shadow-md"
+          >
+            ➡️ 다음 선수</button>
+        </div>
       </div>
-      <button onClick={handlePass} style={{ marginTop: 20 }}>❌ 유찰</button>
-      <button onClick={callNextPlayer} style={{ marginTop: 20, marginLeft: 10 }}>➡️ 다음 선수</button>
     </div>
   );
 }
