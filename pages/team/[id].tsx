@@ -30,12 +30,12 @@ export default function TeamPage() {
       setBidAmount(newBid);
     }
   };
-
-  const confirmBid = () => {
-    update(ref(db, `auction/bids/${team.name}`), bidAmount);
-    setBidAmount(0);
-  };
-
+const confirmBid = () => {
+  update(ref(db, "auction/bids"), {
+    [team.name]: bidAmount
+  });
+  setBidAmount(0);
+};
   return (
     <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-4">
       <h1 className="text-3xl mb-4">🏁 팀 {id} 입찰</h1>
